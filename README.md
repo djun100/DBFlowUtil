@@ -168,7 +168,7 @@ List<People> peoples2 = new Select().from(People.class).where(People_Table.gende
 
 DBFlow的查询方式借鉴ActiveAndroid的，但是比ActiveAndroid功能还要强大。
 
-#### 五、事务、批量保存
+### 五、事务、批量保存
 
 事务是一个数据必须具备的，如果保存10000条数据，一条一条保存必然是很慢的，所以就需要用到事务，批量保存。DBFlow的事务非常的强大，同时使用也很复杂，这里就简单介绍批量保存，更多内容请查看官方文档
 
