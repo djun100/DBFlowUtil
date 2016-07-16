@@ -251,7 +251,7 @@ public class Migration_2_People extends AlterTableMigration<People> {
 
 数据库升级就大功告成了。
 
-###总结：
+### 总结：
 这篇文章只是简单介绍了DBFlow的基本功能使用，DBFlow还有很多很厉害的功能，比如多数据库支持、Powerful Model Caching等，而且还支持Kotlin语言（运行在Java虚拟机的新语言）。我只使用过greenDAO、activeAndroid、afinal、DBFlow数据库，所以在我看来，DBFlow是我用过的数据库当中最好用的数据库，性能也很好，使用非常简单，高度推荐。
 
 我在github上共享一下DBFlow的配置
