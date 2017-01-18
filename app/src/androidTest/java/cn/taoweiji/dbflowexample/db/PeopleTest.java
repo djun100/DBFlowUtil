@@ -1,15 +1,19 @@
 package cn.taoweiji.dbflowexample.db;
 
 import android.util.Log;
+import android.widget.Toast;
 
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
+import com.raizlabs.android.dbflow.structure.database.transaction.ProcessModelTransaction;
+import com.raizlabs.android.dbflow.structure.database.transaction.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.taoweiji.dbflowexample.ApplicationTest;
+import cn.taoweiji.dbflowexample.db_manage.AppDatabase;
 
 /**
  * Created by Wiki on 16/3/6.
@@ -46,9 +50,36 @@ public class PeopleTest extends ApplicationTest {
             peoples.add(people);
         }
         //实时保存，马上保存
-        new SaveModelTransaction<>(ProcessModelInfo.withModels(peoples)).onExecute();
+//        new SaveModelTransaction<>(ProcessModelInfo.withModels(peoples)).onExecute();
         //异步保存，使用异步，如果立刻查询可能无法查到结果
-        //TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(peoples)));
+//        TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(peoples)));
+        FlowManager.getDatabase(AppDatabase.class)
+                .beginTransactionAsync(
+                        new ProcessModelTransaction.Builder<>(
+                                new ProcessModelTransaction.ProcessModel<People>() {
+                                    @Override
+                                    public void processModel(People user, DatabaseWrapper wrapper) {
+                                        // do work here -- i.e. user.delete() or user.update()
+                                        user.save();
+                                    }
+                                }
+                        )
+                                .addAll(peoples)
+                                .build()
+                )  // add elements (can also handle multiple)
+                .error(new Transaction.Error() {
+                    @Override
+                    public void onError(Transaction transaction, Throwable error) {
+
+                    }
+                })
+                .success(new Transaction.Success() {
+                    @Override
+                    public void onSuccess(Transaction transaction) {
+                        Toast.makeText(getContext(),"存储完成",Toast.LENGTH_LONG).show();
+                    }
+                }).build().execute();
+
         List<People> peoples2 = new Select().from(People.class).queryList();
         Log.e("Test-peoples", String.valueOf(peoples2.size()));
     }
